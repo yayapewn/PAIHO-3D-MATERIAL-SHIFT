@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Suspense, useRef, useCallback, useMemo, ErrorInfo } from 'react';
+import React, { Component, useEffect, useState, Suspense, useRef, useCallback, useMemo, ErrorInfo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, useGLTF, Html, Loader, Environment, PerspectiveCamera, Center, ContactShadows } from '@react-three/drei';
 import * as THREE from 'three';
@@ -389,7 +389,7 @@ interface ErrorBoundaryState {
 
 // Error Boundary
 // FIX: Use React.Component to ensure props are correctly typed and available
-class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   state: ErrorBoundaryState = { hasError: false, error: null };
 
   static getDerivedStateFromError(error: any): ErrorBoundaryState {

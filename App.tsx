@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Upload, Box, Check, Layers, X, Trash2, Sliders, Move, RotateCw, Maximize, Sun, Rotate3d, Lightbulb, Droplets, Hammer, Eye, Tag, AlignJustify, Share2, Download, Copy, Facebook, Twitter, MessageCircle, Link as LinkIcon, Palette } from 'lucide-react';
+import { Upload, Box, Check, Layers, X, Trash2, Sliders, Move, RotateCw, Maximize, Sun, Rotate3d, Lightbulb, Droplets, Hammer, Eye, Tag, AlignJustify, Share2, Download, Copy, Facebook, Twitter, MessageCircle, Link as LinkIcon, Palette, AlertTriangle } from 'lucide-react';
 import ModelViewer from './components/ModelViewer';
 import { TextureItem, SelectedPart, TextureConfig } from './types';
 
@@ -379,6 +379,11 @@ const App: React.FC = () => {
       navigator.clipboard.writeText(window.location.href);
       alert("Link copied to clipboard!");
   };
+
+  // Determine Embed URL validity
+  const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
+  const isBlobUrl = currentUrl.startsWith('blob:');
+  const embedSrc = isBlobUrl ? 'https://your-domain.com' : currentUrl;
 
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-white overflow-hidden font-sans">
@@ -919,17 +924,28 @@ const App: React.FC = () => {
 
                     {activeShareTab === 'embed' && (
                         <div className="space-y-4">
+                             {isBlobUrl && (
+                                <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-lg text-xs flex items-start gap-2">
+                                    <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                                    <div>
+                                        <strong>Preview Mode Detected:</strong> You are viewing a temporary preview URL (`blob:`). 
+                                        This cannot be embedded. The code below uses a placeholder URL. 
+                                        Please deploy your app to a static host (like GitHub Pages or Vercel) to get a valid embed URL.
+                                    </div>
+                                </div>
+                             )}
+
                              <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
                                 <p className="text-sm text-gray-600 mb-2">Copy this code to embed the 3D viewer on your website:</p>
                                 <div className="relative">
                                     <textarea 
                                         readOnly
                                         className="w-full h-32 bg-white border border-gray-300 rounded-lg p-3 text-xs font-mono text-gray-600 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                        value={`<iframe src="${window.location.href}" width="100%" height="600px" frameborder="0" allow="camera; microphone; fullscreen"></iframe>`}
+                                        value={`<iframe src="${embedSrc}" width="100%" height="600px" frameborder="0" allow="camera; microphone; fullscreen"></iframe>`}
                                     />
                                     <button 
                                         onClick={() => {
-                                            navigator.clipboard.writeText(`<iframe src="${window.location.href}" width="100%" height="600px" frameborder="0" allow="camera; microphone; fullscreen"></iframe>`);
+                                            navigator.clipboard.writeText(`<iframe src="${embedSrc}" width="100%" height="600px" frameborder="0" allow="camera; microphone; fullscreen"></iframe>`);
                                             alert("Code copied!");
                                         }}
                                         className="absolute top-2 right-2 p-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-md transition"
@@ -938,6 +954,12 @@ const App: React.FC = () => {
                                         <Copy size={14} />
                                     </button>
                                 </div>
+                            </div>
+                            
+                            <div className="text-xs text-gray-500 space-y-1">
+                                <p><strong>⚠️ Important Note:</strong></p>
+                                <p>This embedded viewer will load the <strong>default 3D model</strong>.</p>
+                                <p>Custom uploaded GLB files and applied textures are <strong>not saved to the cloud</strong> in this version and will not appear in the iframe on other websites.</p>
                             </div>
                         </div>
                     )}
