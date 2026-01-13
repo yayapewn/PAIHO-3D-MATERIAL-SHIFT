@@ -20,10 +20,4 @@ export default defineConfig(({ mode }) => {
         }
       }
     };
-
-    // ...
-export default defineConfig({
-  base: './', // 👈 確保有這一行！
-  plugins: [react()],
-})
 });
