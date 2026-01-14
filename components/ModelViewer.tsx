@@ -8,6 +8,12 @@ import { SelectedPart, TextureConfig } from '../types';
 const DEFAULT_MODEL_URL = "https://huggingface.co/yayapewn/huggingface/resolve/main/lace-sneaker-9-part.glb";
 const INTERACTIVE_KEYWORDS = ['Shape027', 'Line040', 'Shape026'];
 
+// Fix: Define intrinsic Three.js elements as capitalized constants to avoid JSX errors in certain TypeScript environments
+const Group = 'group' as any;
+const AmbientLight = 'ambientLight' as any;
+const DirectionalLight = 'directionalLight' as any;
+const Primitive = 'primitive' as any;
+
 const isInteractive = (name: string) => {
     return INTERACTIVE_KEYWORDS.some(keyword => name && name.includes(keyword));
 };
@@ -82,7 +88,6 @@ const Model: React.FC<ModelProps> = ({ url, selectedPart, onPartSelect, textureM
   const textureLoader = useRef(new THREE.TextureLoader());
   const interactiveMeshesRef = useRef<THREE.Mesh[]>([]);
   const allMeshesRef = useRef<THREE.Mesh[]>([]);
-  const Primitive = 'primitive' as any;
 
   useEffect(() => {
     const interactive: THREE.Mesh[] = [];
@@ -202,7 +207,7 @@ const Model: React.FC<ModelProps> = ({ url, selectedPart, onPartSelect, textureM
 const InnerScene = React.memo(({ url, selectedPart, onPartSelect, textureMap }: ModelProps) => {
     const [modelBottom, setModelBottom] = useState(-0.1);
     return (
-        <group>
+        <Group>
             <Center onCentered={({ height }) => setModelBottom(-height / 2)}>
                 <Model 
                     url={url} 
@@ -220,7 +225,7 @@ const InnerScene = React.memo(({ url, selectedPart, onPartSelect, textureMap }: 
                 resolution={1024} 
                 color="#000000" 
             />
-        </group>
+        </Group>
     );
 });
 
@@ -229,7 +234,6 @@ interface ErrorBoundaryState { hasError: boolean; error: any; }
 
 /**
  * Custom Error Boundary to catch 3D rendering failures.
- * Fix: Changed React.Component to Component (imported from 'react') to correctly resolve state, setState, and props inheritance in TypeScript.
  */
 class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
@@ -335,8 +339,8 @@ const ModelViewer = React.forwardRef<any, ModelViewerProps>(({
                       environmentRotation={[0, (envRotation * Math.PI) / 180, 0]}
                   />
                 </Suspense>
-                <ambientLight intensity={0.4} />
-                <directionalLight position={[5, 5, 5]} intensity={0.8} castShadow shadow-mapSize={[1024, 1024]} shadow-bias={-0.0001} />
+                <AmbientLight intensity={0.4} />
+                <DirectionalLight position={[5, 5, 5]} intensity={0.8} castShadow shadow-mapSize={[1024, 1024]} shadow-bias={-0.0001} />
             </ErrorBoundary>
         </Suspense>
       </Canvas>

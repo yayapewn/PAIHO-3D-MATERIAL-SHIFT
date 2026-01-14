@@ -176,10 +176,6 @@ const App: React.FC = () => {
              ref={modelViewerRef} modelFile={modelFile} selectedPart={selectedPart} onPartSelect={setSelectedPart}
              textureMap={partTextures} envPreset={envPreset} envIntensity={envIntensity} envRotation={envRotation} autoRotate={autoRotate}
            />
-           <div className="absolute bottom-6 left-6 pointer-events-none opacity-50">
-                <div className="text-[10px] uppercase tracking-[0.3em] font-bold text-gray-400 mb-1">正在使用</div>
-                <div className="text-xs font-mono uppercase">Gemini 2.5 Flash Rendering</div>
-           </div>
         </div>
 
         <div className="w-[400px] bg-[#111] border-l border-gray-800 flex flex-col shrink-0 z-10 shadow-[-10px_0_30px_rgba(0,0,0,0.5)] overflow-y-auto p-8 space-y-10 scrollbar-hide">
@@ -210,11 +206,8 @@ const App: React.FC = () => {
                         <button onClick={() => setSelectedPart(null)} className="p-3 bg-[#1a1a1a] hover:bg-red-500/10 hover:text-red-500 rounded-2xl transition-all border border-gray-800"><X size={20}/></button>
                     </div>
 
-                    <div className="space-y-4 bg-gradient-to-br from-indigo-600/20 to-purple-600/10 p-6 rounded-[32px] border border-indigo-500/30 shadow-2xl relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <Sparkles size={64} />
-                        </div>
-                        <div className="flex items-center gap-2 text-indigo-300 font-bold text-xs uppercase tracking-widest">
+                    <div className="space-y-4">
+                        <div className="flex gap-2 text-indigo-400 font-bold text-xs uppercase tracking-widest mb-1">
                             <Sparkles size={14} className="animate-pulse" /> AI 智能紋理生成
                         </div>
                         <div className="relative">
@@ -365,19 +358,19 @@ const App: React.FC = () => {
 
             <div className="pt-10 mt-auto border-t border-gray-800/50">
                 <div className="flex items-center gap-2 text-orange-400 font-bold text-xs uppercase tracking-widest mb-5">
-                    <Sun className="w-4 h-4" /> 工作室光照 HDRI
+                    <Sun className="w-4 h-4" /> 環境光
                 </div>
                 <div className="bg-[#1a1a1a] p-6 rounded-[32px] border border-gray-800/50 space-y-6 shadow-inner">
                     <div className="space-y-3">
                         <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider text-gray-500">
-                            <span>曝光強度</span>
+                            <span>亮度</span>
                             <span className="text-orange-400">{envIntensity.toFixed(1)}x</span>
                         </div>
                         <input type="range" min="0" max="3" step="0.1" value={envIntensity} onChange={(e) => setEnvIntensity(parseFloat(e.target.value))} className="w-full accent-orange-500 h-1.5" />
                     </div>
                     <div className="space-y-3">
                         <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider text-gray-500">
-                            <span>環境角度</span>
+                            <span>光源角度</span>
                             <span className="text-orange-400">{Math.round(envRotation)}°</span>
                         </div>
                         <input type="range" min="0" max="360" step="1" value={envRotation} onChange={(e) => setEnvRotation(parseFloat(e.target.value))} className="w-full accent-orange-500 h-1.5" />
