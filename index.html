@@ -1,21 +1,20 @@
-
 <!DOCTYPE html>
 <html lang="zh-TW">
   <head>
     <meta charset="UTF-8" />
-    <!-- 修改為相對路徑，確保 GitHub Pages 子資料夾部署成功 -->
-    <link rel="icon" type="image/svg+xml" href="vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="./vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
+
     <title>PAIHO 3D SHIFT | 專業 3D 材質客製平台</title>
     <meta name="description" content="靈感來自 Nike By You，基於 Gemini AI 驅動的高級 3D 運動鞋材質替換與設計平台。" />
-    
-    <!-- Open Graph / Facebook -->
+
+    <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content="PAIHO 3D SHIFT | 專業 3D 材質客製平台" />
     <meta property="og:description" content="點擊、設計、AI 生成。體驗未來感的運動鞋客製化流程。" />
     <meta property="og:image" content="https://raw.githubusercontent.com/yayapewn/shoe-textures/main/og-preview.png" />
 
+    <!-- Tailwind CDN（警告可忽略） -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -30,27 +29,17 @@
         }
       }
     </script>
-    <script type="importmap">
-    {
-      "imports": {
-        "@google/genai": "https://aistudiocdn.com/@google/genai@^1.31.0",
-        "react/": "https://aistudiocdn.com/react@^19.2.1/",
-        "react": "https://aistudiocdn.com/react@^19.2.1",
-        "lucide-react": "https://aistudiocdn.com/lucide-react@^0.555.0",
-        "@react-three/drei": "https://aistudiocdn.com/@react-three/drei@^10.7.7",
-        "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
-        "three": "https://aistudiocdn.com/three@^0.181.2",
-        "@react-three/fiber": "https://aistudiocdn.com/@react-three/fiber@^9.4.2"
-      }
-    }
-    </script>
+
     <style>
-      /* 防止 GitHub Pages 載入時的閃爍 */
       body { background-color: #0a0a0a; margin: 0; }
       #root { height: 100vh; width: 100vw; }
     </style>
   </head>
+
   <body>
     <div id="root"></div>
+
+    <!-- 這一行是最重要的：啟動你的 Vite + React App -->
+    <script type="module" src="./src/main.tsx"></script>
   </body>
 </html>
