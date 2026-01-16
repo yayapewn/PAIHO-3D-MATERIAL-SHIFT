@@ -2,7 +2,6 @@ export interface TextureItem {
   id: string;
   name: string;
   url: string; // Blob URL or Data URL
-  isAiGenerated?: boolean;
 }
 
 export interface TextureConfig {

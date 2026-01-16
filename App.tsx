@@ -1,9 +1,7 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Upload, Box, Check, Layers, X, Trash2, Sliders, Move, RotateCw, Maximize, Sun, Rotate3d, Lightbulb, Droplets, Hammer, Eye, Tag, AlignJustify, Share2, Download, Copy, Facebook, Twitter, MessageCircle, Link as LinkIcon, Palette, AlertTriangle, Sparkles, Loader2 } from 'lucide-react';
 import ModelViewer from './components/ModelViewer';
 import { TextureItem, SelectedPart, TextureConfig } from './types';
-import { generateAiTexture } from './services/geminiService';
 
 // 預設材質庫數據
 const VAMP_TEXTURES: TextureItem[] = [
@@ -46,13 +44,8 @@ const App: React.FC = () => {
   const [isGeneratingScreenshot, setIsGeneratingScreenshot] = useState(false);
   const modelViewerRef = useRef<any>(null);
 
-  // AI 紋理生成狀態
-  const [aiPrompt, setAiPrompt] = useState('');
-  const [isGeneratingAi, setIsGeneratingAi] = useState(false);
-
-  // 初始化檢查（可選：用於確認 API KEY 狀態）
   useEffect(() => {
-    console.log("PAIHO 3D SHIFT 已啟動 - 準備部署至公開網頁");
+    console.log("PAIHO 3D SHIFT 已啟動");
   }, []);
 
   const handleTextureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,11 +65,11 @@ const App: React.FC = () => {
         ...prev, 
         [selectedPart.id]: { 
             url: texture.url, 
-            scale: 1, 
+            scale: 6.5, // 預設縮放設為 6.5
             offsetX: 0, 
             offsetY: 0, 
             rotation: 0, 
-            roughness: 0.5, 
+            roughness: 1, 
             metalness: 0, 
             opacity: 1 
         } 
@@ -84,42 +77,11 @@ const App: React.FC = () => {
     });
   };
 
-  const handleAiTextureGenerate = async () => {
-    if (!aiPrompt.trim() || !selectedPart) return;
-    setIsGeneratingAi(true);
-    try {
-        const imageUrl = await generateAiTexture(aiPrompt);
-        const newTexture: TextureItem = {
-            id: crypto.randomUUID(),
-            name: `AI: ${aiPrompt}`,
-            url: imageUrl,
-            isAiGenerated: true
-        };
-        
-        const partName = selectedPart.name;
-        if (partName.includes('Shape027')) {
-            setLibraries(prev => ({ ...prev, vamp: [newTexture, ...prev.vamp] }));
-        } else if (partName.includes('Line040')) {
-            setLibraries(prev => ({ ...prev, label: [newTexture, ...prev.label] }));
-        } else {
-            setLibraries(prev => ({ ...prev, vamp: [newTexture, ...prev.vamp] }));
-        }
-
-        applyTexture(newTexture);
-        setAiPrompt('');
-    } catch (error: any) {
-        console.error(error);
-        alert(`AI 生成失敗: ${error.message}`);
-    } finally {
-        setIsGeneratingAi(false);
-    }
-  };
-
   const updateTextureConfig = (key: keyof TextureConfig, value: any) => {
       if (!selectedPart) return;
       setPartTextures(prev => {
           const config = prev[selectedPart.id] || { 
-            url: '', scale: 1, offsetX: 0, offsetY: 0, rotation: 0, roughness: 0.5, metalness: 0, opacity: 1 
+            url: '', scale: 6.5, offsetX: 0, offsetY: 0, rotation: 0, roughness: 1, metalness: 0, opacity: 1 
           };
           return { ...prev, [selectedPart.id]: { ...config, [key]: value } };
       });
@@ -192,7 +154,7 @@ const App: React.FC = () => {
                     <div className="space-y-2">
                         <p className="text-lg font-black text-gray-300">選取部位進行客製</p>
                         <p className="text-xs text-gray-600 leading-relaxed max-w-[200px] mx-auto">
-                            直接點擊 3D 模型上的部件，<br/>即可開啟高級材質庫與 AI 生成器。
+                            直接點擊 3D 模型上的部件，<br/>即可開啟高級材質庫。
                         </p>
                     </div>
                 </div>
@@ -204,30 +166,6 @@ const App: React.FC = () => {
                             <h2 className="text-2xl font-black tracking-tight">{selectedPart.name}</h2>
                         </div>
                         <button onClick={() => setSelectedPart(null)} className="p-3 bg-[#1a1a1a] hover:bg-red-500/10 hover:text-red-500 rounded-2xl transition-all border border-gray-800"><X size={20}/></button>
-                    </div>
-
-                    <div className="space-y-4">
-                        <div className="flex gap-2 text-indigo-400 font-bold text-xs uppercase tracking-widest mb-1">
-                            <Sparkles size={14} className="animate-pulse" /> AI 智能紋理生成
-                        </div>
-                        <div className="relative">
-                            <input 
-                                type="text" 
-                                value={aiPrompt}
-                                onChange={(e) => setAiPrompt(e.target.value)}
-                                onKeyDown={(e) => e.key === 'Enter' && handleAiTextureGenerate()}
-                                placeholder="描述想要生成的材質細節..." 
-                                className="w-full bg-[#0a0a0a] border border-gray-800 focus:border-indigo-500 rounded-2xl px-5 py-4 text-sm focus:outline-none transition-all pr-14 placeholder:text-gray-700 font-medium"
-                            />
-                            <button 
-                                onClick={handleAiTextureGenerate}
-                                disabled={isGeneratingAi || !aiPrompt.trim()}
-                                className="absolute right-2 top-1/2 -translate-y-1/2 p-3 bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-800 disabled:text-gray-600 rounded-xl transition-all shadow-lg active:scale-90"
-                            >
-                                {isGeneratingAi ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
-                            </button>
-                        </div>
-                        <p className="text-[10px] text-gray-500 font-medium italic">Gemini 視覺引擎將為您創造專屬的無縫 3D 貼圖</p>
                     </div>
 
                     {currentTextureConfig && (
@@ -242,7 +180,7 @@ const App: React.FC = () => {
                                             <span>紋理縮放</span>
                                             <span className="text-indigo-400">{currentTextureConfig.scale.toFixed(1)}x</span>
                                         </div>
-                                        <input type="range" min="0.1" max="10" step="0.1" value={currentTextureConfig.scale} onChange={(e) => updateTextureConfig('scale', parseFloat(e.target.value))} className="w-full accent-indigo-500 h-1.5" />
+                                        <input type="range" min="0.1" max="15" step="0.1" value={currentTextureConfig.scale} onChange={(e) => updateTextureConfig('scale', parseFloat(e.target.value))} className="w-full accent-indigo-500 h-1.5" />
                                     </div>
                                     <div className="space-y-3">
                                         <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider text-gray-500">
@@ -260,13 +198,6 @@ const App: React.FC = () => {
                                             <span className="text-blue-400">{currentTextureConfig.roughness.toFixed(2)}</span>
                                         </div>
                                         <input type="range" min="0" max="1" step="0.05" value={currentTextureConfig.roughness} onChange={(e) => updateTextureConfig('roughness', parseFloat(e.target.value))} className="w-full accent-blue-500 h-1.5" />
-                                    </div>
-                                    <div className="space-y-3">
-                                        <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider text-gray-500">
-                                            <span>金屬感強度</span>
-                                            <span className="text-blue-400">{currentTextureConfig.metalness.toFixed(2)}</span>
-                                        </div>
-                                        <input type="range" min="0" max="1" step="0.05" value={currentTextureConfig.metalness} onChange={(e) => updateTextureConfig('metalness', parseFloat(e.target.value))} className="w-full accent-blue-500 h-1.5" />
                                     </div>
                                 </div>
                             </div>
@@ -293,11 +224,6 @@ const App: React.FC = () => {
                                         className={`group relative aspect-square rounded-2xl border-2 overflow-hidden transition-all duration-500 transform active:scale-90 ${currentTextureConfig?.url === t.url ? 'border-indigo-500 ring-4 ring-indigo-500/20 shadow-2xl scale-105 z-10' : 'border-[#1a1a1a] hover:border-gray-600 bg-[#0a0a0a]'}`}
                                     >
                                         <img src={t.url} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={t.name} />
-                                        {t.isAiGenerated && (
-                                            <div className="absolute top-2 right-2 bg-indigo-600 p-1.5 rounded-lg shadow-xl">
-                                                <Sparkles size={10} className="text-white" />
-                                            </div>
-                                        )}
                                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                             <span className="text-[10px] font-black uppercase text-white tracking-widest">套用</span>
                                         </div>
@@ -342,11 +268,6 @@ const App: React.FC = () => {
                                         className={`group relative aspect-square rounded-2xl border-2 overflow-hidden transition-all duration-500 transform active:scale-90 ${currentTextureConfig?.url === t.url ? 'border-pink-500 ring-4 ring-pink-500/20 shadow-2xl scale-105 z-10' : 'border-[#1a1a1a] hover:border-gray-600 bg-[#0a0a0a]'}`}
                                     >
                                         <img src={t.url} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={t.name} />
-                                        {t.isAiGenerated && (
-                                            <div className="absolute top-2 right-2 bg-indigo-600 p-1.5 rounded-lg">
-                                                <Sparkles size={10} className="text-white" />
-                                            </div>
-                                        )}
                                     </button>
                                 ))}
                             </div>

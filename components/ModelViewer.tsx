@@ -235,7 +235,12 @@ interface ErrorBoundaryState { hasError: boolean; error: any; }
 /**
  * Custom Error Boundary to catch 3D rendering failures.
  */
+// Fix: Use Component from react and explicitly declare props/state to ensure they are correctly identified by the compiler.
 class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  // Fix: Explicitly declare state and props to fix "does not exist on type ErrorBoundary" errors
+  public state: ErrorBoundaryState;
+  public props: ErrorBoundaryProps;
+
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false, error: null };
@@ -243,17 +248,20 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   static getDerivedStateFromError(error: any): ErrorBoundaryState { return { hasError: true, error }; }
   componentDidCatch(error: any, errorInfo: ErrorInfo) { console.error("模型載入錯誤:", error, errorInfo); }
   render() {
+    // Fix: Access state using this.state
     if (this.state.hasError) {
       return (
         <Html center>
           <div className="bg-white/90 p-6 rounded-lg shadow-xl border border-red-200 text-center w-80 backdrop-blur-sm">
             <div className="text-red-500 font-bold mb-2 text-lg">載入失敗</div>
             <p className="text-sm text-gray-600 mb-4">無法讀取 3D 模型，請確認連結是否正確或網路狀態。</p>
+            {/* Fix: Access setState using this.setState */}
             <button onClick={() => this.setState({ hasError: false })} className="px-4 py-2 bg-red-500 text-white rounded-md text-sm hover:bg-red-600 transition">重試</button>
           </div>
         </Html>
       );
     }
+    // Fix: Access props using this.props
     return this.props.children;
   }
 }
